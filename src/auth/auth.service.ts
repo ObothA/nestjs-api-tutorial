@@ -7,6 +7,7 @@ import * as argon from 'argon2';
 
 import { AuthDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,37 @@ export class AuthService {
     }
   }
 
-  signin() {
-    return { msg: 'I have signed in' };
+  async signin(dto: AuthDto) {
+    // Find the user by email
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      });
+
+    // if user doesn't exist, throw exception
+    if (!user) {
+      throw new ForbiddenException(
+        'Credentials Incorrect',
+      );
+    }
+
+    //compare password
+    const pwMatches = await argon.verify(
+      user.hash,
+      dto.password,
+    );
+
+    // if password incorrect, throw exception
+    if (!pwMatches) {
+      throw new ForbiddenException(
+        'Credentials Incorrect',
+      );
+    }
+
+    // Send back the user.
+    delete user.hash;
+    return user;
   }
 }
