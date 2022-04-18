@@ -145,8 +145,8 @@ describe('App e2e', () => {
 
     describe('Get bookmark by id.', () => {});
 
-    describe('Edit Bookmark', () => {});
+    describe('Edit Bookmark by id', () => {});
 
-    describe('Delete bookmark', () => {});
+    describe('Delete bookmark by id', () => {});
   });
 });
