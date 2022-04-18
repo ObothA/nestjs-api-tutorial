@@ -75,8 +75,27 @@ export class BookmarkService {
     });
   }
 
-  deleteBookmarkById(
+  async deleteBookmarkById(
     userId: number,
     bookmarkId: number,
-  ) {}
+  ) {
+    const bookmark =
+      await this.prisma.bookmark.findUnique({
+        where: {
+          id: bookmarkId,
+        },
+      });
+
+    if (!bookmark || bookmark.userId !== userId) {
+      throw new ForbiddenException(
+        'Access to resource Denied.',
+      );
+    }
+
+    await this.prisma.bookmark.delete({
+      where: {
+        id: bookmarkId,
+      },
+    });
+  }
 }
