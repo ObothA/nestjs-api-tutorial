@@ -150,12 +150,26 @@ describe('App e2e', () => {
           })
           .withBody(dto)
           .expectStatus(200)
-          .inspect();
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.email);
       });
     });
   });
 
   describe('Bookmarks', () => {
+    describe('Get empty bookmarks', () => {
+      it('Should get bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      });
+    });
+
     describe('Creat bookmark', () => {});
 
     describe('Get Bookmarks', () => {});
