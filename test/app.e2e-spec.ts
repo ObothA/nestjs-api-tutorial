@@ -1,9 +1,11 @@
 import { ValidationPipe } from '@nestjs/common';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../src/prisma/prisma.service';
+import * as pactum from 'pactum';
 
+import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
+import { AuthDto } from '../src/auth/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -24,9 +26,13 @@ describe('App e2e', () => {
     );
 
     await app.init();
+    await app.listen(3333);
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
+    pactum.request.setBaseUrl(
+      'http://localhost:3333',
+    );
   });
 
   afterAll(() => {
@@ -34,8 +40,20 @@ describe('App e2e', () => {
   });
 
   describe('Auth', () => {
+    const dto: AuthDto = {
+      email: 'oboth@oboth.com',
+      password: '123',
+    };
+
     describe('Signup', () => {
-      it.todo('Should sign up');
+      it('Should sign up', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody(dto)
+          .expectStatus(201);
+        // .inspect(); log the result
+      });
     });
 
     describe('Signin', () => {
