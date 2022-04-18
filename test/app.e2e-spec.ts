@@ -46,6 +46,16 @@ describe('App e2e', () => {
     };
 
     describe('Signup', () => {
+      it('Should throw if email is empty', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({
+            password: dto.password,
+          })
+          .expectStatus(400);
+      });
+
       it('Should sign up', () => {
         return pactum
           .spec()
@@ -57,7 +67,13 @@ describe('App e2e', () => {
     });
 
     describe('Signin', () => {
-      it.todo('Should sign in');
+      it('Should sign in', () => {
+        return pactum
+          .spec()
+          .post('/auth/signin')
+          .withBody(dto)
+          .expectStatus(200);
+      });
     });
   });
 
